@@ -130,7 +130,7 @@ const StyledDetails = styled(Common)`
 const StyledMenuItem = styled.li`
   background-color: ${({ backgroundColor }) => backgroundColor || "#fff"};
   color: rgba(0, 0, 0, 0.7);
-  padding: 12px;
+  padding: 12px 24px;
   font-size: 1rem;
   border-radius: none;
   cursor: pointer;
@@ -183,7 +183,10 @@ class App extends Component {
       showOverlay: true,
       previousShowOverlay: false,
       show: true,
-      toggle: false
+      blocks: {
+        ...prevState.blocks,
+        current: "menu"
+      }
     }));
   };
 
@@ -191,12 +194,12 @@ class App extends Component {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     const sizes = { width: 0, height: 0 };
-    if (window.matchMedia("(min-width: 600px)").matches) {
+    if (window.matchMedia("(min-width: 960px)").matches) {
+      sizes.width = viewportWidth * (65 / 100);
+      sizes.height = viewportHeight * (70 / 100);
+    } else if (window.matchMedia("(min-width: 600px)").matches) {
       sizes.width = viewportWidth * (80 / 100);
       sizes.height = viewportHeight * (80 / 100);
-    } else if (window.matchMedia("(min-width: 960px)").matches) {
-      sizes.width = viewportWidth * (60 / 100);
-      sizes.height = viewportHeight * (70 / 100);
     } else {
       sizes.width = viewportWidth * (92 / 100);
       sizes.height = viewportHeight * (80 / 100);
@@ -210,10 +213,25 @@ class App extends Component {
       showOverlay: false,
       show: false
     }));
+  showDetails = name => () => {
+    this.setState(prevState => ({
+      blocks: {
+        ...prevState.blocks,
+        current: name
+      },
+      previousShowOverlay: !!prevState.showOverlay
+    }));
+  };
   handleToggle = () =>
-    this.setState(prevState => ({ toggle: !prevState.toggle, previousShowOverlay: !!prevState.showOverlay }));
+    this.setState(prevState => ({
+      blocks: {
+        ...prevState.blocks,
+        current: prevState.blocks.current === "menu" ? "profile" : "menu"
+      },
+      previousShowOverlay: !!prevState.showOverlay
+    }));
   render() {
-    const { albums: albumsFromState, showOverlay, toggle, show, previousShowOverlay } = this.state;
+    const { albums: albumsFromState, showOverlay, show, previousShowOverlay, blocks } = this.state;
     const albums = albumsFromState.map((album, index) => (
       <StyledAlbumContainer key={album.id} selected={album.selected} name={album.name}>
         <StyledAlbum
@@ -247,13 +265,12 @@ class App extends Component {
           }}
           to={{
             opacity: Number(show),
-            width: !toggle ? 190 : this.getDetailsSizes().width,
-            height: !toggle ? 87 : this.getDetailsSizes().height
+            width: blocks.current === "menu" ? 190 : this.getDetailsSizes().width,
+            height: blocks.current === "menu" ? 87 : this.getDetailsSizes().height
           }}
           config={key => {
             const duration =
               (key === "width" || key === "height") &&
-              !toggle &&
               !previousShowOverlay /* really important! to know if its the first appearance of modal */
                 ? 1
                 : show
@@ -264,29 +281,45 @@ class App extends Component {
         >
           {blockProps => {
             return (
-              <StyledBlock {...blockProps} toggle={toggle} show={show}>
+              <StyledBlock {...blockProps} show={show}>
                 <Transition
                   config={(item, type) => {
                     return { duration: type === "leave" ? 175 : 225 };
                   }}
-                  items={toggle}
+                  items={[blocks.items.find(item => item.name === blocks.current)]}
+                  keys={item => item.id}
                   from={{ opacity: 0 }}
                   enter={{ opacity: 1 }}
                   leave={{ opacity: 0 }}
                 >
-                  {toggle => {
-                    return toggle
-                      ? props => (
-                          <StyledDetails opacity={props.opacity} show={toggle}>
-                            Details
-                          </StyledDetails>
-                        )
-                      : props => (
-                          <StyledMenu opacity={props.opacity} show={!toggle}>
-                            <StyledMenuItem hoveredBgColor={"#40a1c1"}>Profil</StyledMenuItem>
-                            <StyledMenuItem hoveredBgColor={"#1e364a"}>Illustrations</StyledMenuItem>
+                  {item => {
+                    switch (blocks.current) {
+                      case "menu":
+                        return props => (
+                          <StyledMenu opacity={props.opacity} show={blocks.current === "menu"}>
+                            <StyledMenuItem hoveredBgColor={"#40a1c1"} onClick={this.showDetails("profile")}>
+                              Profil
+                            </StyledMenuItem>
+                            <StyledMenuItem hoveredBgColor={"#1e364a"} onClick={this.showDetails("illustrations")}>
+                              Illustrations
+                            </StyledMenuItem>
                           </StyledMenu>
                         );
+                      case "profile":
+                        return props => (
+                          <StyledDetails opacity={props.opacity} show={blocks.current === "profile"}>
+                            Profil
+                          </StyledDetails>
+                        );
+                      case "illustrations":
+                        return props => (
+                          <StyledDetails opacity={props.opacity} show={blocks.current === "illustrations"}>
+                            Illustrations
+                          </StyledDetails>
+                        );
+                      default:
+                        return "";
+                    }
                   }}
                 </Transition>
               </StyledBlock>
