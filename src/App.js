@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import styled, { createGlobalStyle } from "styled-components";
-import { Transition, Spring } from "react-spring";
+import { Transition, Spring, animated } from "react-spring";
 import tintinPicture from "./assets/img/tintin.png";
 import milouPicture from "./assets/img/milou.png";
 import haddockPicture from "./assets/img/haddock.jpg";
@@ -9,7 +9,10 @@ import tournesolPicture from "./assets/img/tournesol.png";
 import dupondtPicture from "./assets/img/dupondt.jpg";
 import nestorPicture from "./assets/img/nestor.png";
 import castafiorePicture from "./assets/img/castafiore.jpg";
+import lampionPicture from "./assets/img/lampion.jpg";
+import dafigueiraPicture from "./assets/img/dafigueira.jpg";
 import alcazarPicture from "./assets/img/alcazar.jpg";
+import abdallahPicture from "./assets/img/abdallah.png";
 
 import Overlay from "./components/Overlay";
 
@@ -32,9 +35,10 @@ const StyledContainer = styled.div`
   align-items: center;
   align-content: center;
   flex-wrap: wrap;
-  @media only screen and (min-width: 960px) {
+  max-width: 960px;
+  /* @media only screen and (min-width: 960px) {
     width: 70vw;
-  }
+  } */
 `;
 
 const StyledAlbumContainer = styled.div`
@@ -79,26 +83,25 @@ const StyledAlbum = styled.div`
   }
 `;
 
-const StyledBlock = styled.div.attrs({
-  style: props => {
+const StyledBlock = styled(animated.div).attrs({
+  style: ({ opacity, width, height, top, pointerEvents }) => {
     return {
-      opacity: props.opacity,
-      visibility: props.opacity > 0 ? "visible" : "hidden",
-      pointerEvents: props.show ? "auto" : "none",
-      width: props.width,
-      height: props.height
+      opacity: opacity.interpolate(o => o),
+      visibility: opacity.interpolate(o => (o > 0 ? "visible" : "hidden")),
+      pointerEvents,
+      width,
+      height,
+      top: top.interpolate(top => `${top}%`)
     };
   }
 })`
-  position: absolute;
+  position: fixed;
   left: 50%;
-  top: 50%;
   transform: translate(-50%, -50%);
   z-index: 10000;
   background-color: #fff;
   border-radius: 6px;
   overflow: hidden;
-  //will-change: opacity, visibility, pointer-events, width, height;
 `;
 
 const Common = styled.div.attrs({
@@ -114,17 +117,18 @@ const Common = styled.div.attrs({
   width: 100%;
   height: 100%;
   transform: translate(-50%, -50%);
-  //will-change: opacity, visibility, z-index;
 `;
 
 const StyledMenu = styled(Common)`
   padding: 0;
   margin: 0;
   list-style-type: none;
+  overflow: hidden;
 `;
 
 const StyledDetails = styled(Common)`
   padding: 16px 24px;
+  overflow: auto;
 `;
 
 const StyledMenuItem = styled.li`
@@ -156,14 +160,17 @@ const StyledMenuItem = styled.li`
 class App extends Component {
   state = {
     albums: [
-      { id: 1, selected: false, name: "Tintin", picture: tintinPicture },
-      { id: 2, selected: false, name: "Milou", picture: milouPicture },
-      { id: 3, selected: false, name: "Capitaine Haddock", picture: haddockPicture },
-      { id: 4, selected: false, name: "Professeur Tournesol", picture: tournesolPicture },
-      { id: 5, selected: false, name: "Dupont & Dupond", picture: dupondtPicture },
-      { id: 6, selected: false, name: "Nestor", picture: nestorPicture },
-      { id: 7, selected: false, name: "Bianca Castafiore", picture: castafiorePicture },
-      { id: 8, selected: false, name: "Général Alcazar", picture: alcazarPicture }
+      { id: 1, selected: false, displayName: "Tintin", picture: tintinPicture },
+      { id: 2, selected: false, displayName: "Milou", picture: milouPicture },
+      { id: 3, selected: false, displayName: "Capitaine Haddock", picture: haddockPicture },
+      { id: 4, selected: false, displayName: "Professeur Tournesol", picture: tournesolPicture },
+      { id: 5, selected: false, displayName: "Dupont et Dupond", picture: dupondtPicture },
+      { id: 6, selected: false, displayName: "Nestor", picture: nestorPicture },
+      { id: 7, selected: false, displayName: "Bianca Castafiore", picture: castafiorePicture },
+      { id: 8, selected: false, displayName: "Séraphin Lampion", picture: lampionPicture },
+      { id: 9, selected: false, displayName: "Señor Oliveira Da Figueira", picture: dafigueiraPicture },
+      { id: 10, selected: false, displayName: "Général Alcazar", picture: alcazarPicture },
+      { id: 11, selected: false, displayName: "Abdallah", picture: abdallahPicture }
     ],
     showOverlay: false,
     previousShowOverlay: false,
@@ -194,15 +201,18 @@ class App extends Component {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     const sizes = { width: 0, height: 0 };
-    if (window.matchMedia("(min-width: 960px)").matches) {
-      sizes.width = viewportWidth * (65 / 100);
-      sizes.height = viewportHeight * (70 / 100);
+    if (window.matchMedia("(min-width: 1280px)").matches) {
+      sizes.width = viewportWidth * (48 / 100);
+      sizes.height = viewportHeight * (60 / 100);
     } else if (window.matchMedia("(min-width: 600px)").matches) {
-      sizes.width = viewportWidth * (80 / 100);
-      sizes.height = viewportHeight * (80 / 100);
+      sizes.width = viewportWidth * (70 / 100);
+      sizes.height = viewportHeight * (60 / 100);
+    } else if (window.matchMedia("(min-width: 480px)").matches) {
+      sizes.width = viewportWidth * (85 / 100);
+      sizes.height = viewportHeight * (70 / 100);
     } else {
       sizes.width = viewportWidth * (92 / 100);
-      sizes.height = viewportHeight * (80 / 100);
+      sizes.height = viewportHeight * (82 / 100);
     }
     return sizes;
   };
@@ -222,18 +232,11 @@ class App extends Component {
       previousShowOverlay: !!prevState.showOverlay
     }));
   };
-  handleToggle = () =>
-    this.setState(prevState => ({
-      blocks: {
-        ...prevState.blocks,
-        current: prevState.blocks.current === "menu" ? "profile" : "menu"
-      },
-      previousShowOverlay: !!prevState.showOverlay
-    }));
   render() {
     const { albums: albumsFromState, showOverlay, show, previousShowOverlay, blocks } = this.state;
+    const selected = albumsFromState.find(a => a.selected);
     const albums = albumsFromState.map((album, index) => (
-      <StyledAlbumContainer key={album.id} selected={album.selected} name={album.name}>
+      <StyledAlbumContainer key={album.id} selected={album.selected} name={album.displayName}>
         <StyledAlbum
           ref={node => this.nodes.push(node)}
           selected={album.selected}
@@ -247,12 +250,6 @@ class App extends Component {
     return (
       <>
         <GlobalStyle />
-        <button
-          style={{ position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 10000 }}
-          onClick={this.handleToggle}
-        >
-          toggle
-        </button>
         <StyledContainer>
           <Overlay show={showOverlay} onClick={this.onOverlayClick} />
           {albums}
@@ -261,38 +258,47 @@ class App extends Component {
           from={{
             opacity: 0,
             width: 0,
-            height: 0
+            height: 0,
+            top: 50
           }}
           to={{
             opacity: Number(show),
             width: blocks.current === "menu" ? 190 : this.getDetailsSizes().width,
-            height: blocks.current === "menu" ? 87 : this.getDetailsSizes().height
+            height: blocks.current === "menu" ? /*87*/ 131 : this.getDetailsSizes().height,
+            top: blocks.current === "menu" ? 50 : 55
           }}
           config={key => {
+            const isFirstAppearance = !previousShowOverlay;
             const duration =
-              (key === "width" || key === "height") &&
-              !previousShowOverlay /* really important! to know if its the first appearance of modal */
+              (key === "width" || key === "height" || key === "top") &&
+              isFirstAppearance /* really important! to know if its the first appearance of modal */
                 ? 1
                 : show
                   ? 225
-                  : 100;
+                  : 150;
             return { duration };
           }}
+          native
         >
-          {blockProps => {
+          {({ opacity, top, width, height }) => {
+            console.log("render from Spring block");
             return (
-              <StyledBlock {...blockProps} show={show}>
+              <StyledBlock
+                pointerEvents={show ? "auto" : "none"}
+                opacity={opacity}
+                top={top}
+                width={width}
+                height={height}
+              >
                 <Transition
-                  config={(item, type) => {
-                    return { duration: type === "leave" ? 175 : 225 };
-                  }}
+                  config={(_, type) => ({ duration: type === "leave" ? 1 : 200 })}
                   items={[blocks.items.find(item => item.name === blocks.current)]}
                   keys={item => item.id}
                   from={{ opacity: 0 }}
-                  enter={{ opacity: 1 }}
+                  enter={[{ opacity: !previousShowOverlay ? 1 : 0 }, { opacity: 1 }]}
                   leave={{ opacity: 0 }}
                 >
-                  {item => {
+                  {() => {
                     switch (blocks.current) {
                       case "menu":
                         return props => (
@@ -303,18 +309,28 @@ class App extends Component {
                             <StyledMenuItem hoveredBgColor={"#1e364a"} onClick={this.showDetails("illustrations")}>
                               Illustrations
                             </StyledMenuItem>
+                            <StyledMenuItem hoveredBgColor={"#efad4b"} onClick={this.showDetails("illustrations")}>
+                              Albums
+                            </StyledMenuItem>
                           </StyledMenu>
                         );
                       case "profile":
                         return props => (
                           <StyledDetails opacity={props.opacity} show={blocks.current === "profile"}>
-                            Profil
+                            <div style={{ overflow: "auto" }}>
+                              {selected && (
+                                <h2 style={{ marginTop: 0, fontSize: "1rem", fontWeight: 400 }}>
+                                  {selected.displayName}
+                                </h2>
+                              )}
+                            </div>
                           </StyledDetails>
                         );
                       case "illustrations":
                         return props => (
                           <StyledDetails opacity={props.opacity} show={blocks.current === "illustrations"}>
-                            Illustrations
+                            <h2 style={{ marginTop: 0, fontSize: "1rem", fontWeight: 400 }}>Illustrations</h2>
+                            <div style={{ overflow: "auto" }}>42 images :</div>
                           </StyledDetails>
                         );
                       default:

@@ -157,13 +157,10 @@ export default class Block extends Component {
     const decalageTop = height + offsetTop;
     left = (hasAvailableWidth ? left : left - overflowedWidth - (viewportWidth - right)) + "px";
     top = top + (hasAvailableHeight ? decalageTop : -requiredHeight) + "px";
-    console.log("this.node.current.firstElementChild", this.node.current.firstElementChild);
     this.setState({
       coords: {
         left,
-        top,
-        width: this.node.current.firstElementChild.clientWidth,
-        height: this.node.current.firstElementChild.clientHeight
+        top
       }
     });
   };
