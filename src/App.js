@@ -11,6 +11,7 @@ import nestorPicture from "./assets/img/nestor.png";
 import castafiorePicture from "./assets/img/castafiore.jpg";
 import lampionPicture from "./assets/img/lampion.jpg";
 import dafigueiraPicture from "./assets/img/dafigueira.jpg";
+import tchangPicture from "./assets/img/tchang.jpg";
 import alcazarPicture from "./assets/img/alcazar.jpg";
 import abdallahPicture from "./assets/img/abdallah.png";
 
@@ -41,13 +42,13 @@ const StyledContainer = styled.div`
   } */
 `;
 
-const StyledAlbumContainer = styled.div`
+const StyledCharacterContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 120px;
   height: 120px;
-  margin-bottom: 50px;
+  margin-bottom: 42px;
   position: relative;
   z-index: ${({ selected }) => (selected ? 3 : 1)};
   &:after {
@@ -63,7 +64,7 @@ const StyledAlbumContainer = styled.div`
   }
 `;
 
-const StyledAlbum = styled.div`
+const StyledCharacter = styled.div`
   background: ${({ picture }) => (picture ? `url(${picture}) no-repeat center top, #fff` : "#fff")};
   background-size: cover;
   width: 70%;
@@ -159,7 +160,7 @@ const StyledMenuItem = styled.li`
 
 class App extends Component {
   state = {
-    albums: [
+    characters: [
       { id: 1, selected: false, displayName: "Tintin", picture: tintinPicture },
       { id: 2, selected: false, displayName: "Milou", picture: milouPicture },
       { id: 3, selected: false, displayName: "Capitaine Haddock", picture: haddockPicture },
@@ -169,24 +170,25 @@ class App extends Component {
       { id: 7, selected: false, displayName: "Bianca Castafiore", picture: castafiorePicture },
       { id: 8, selected: false, displayName: "Séraphin Lampion", picture: lampionPicture },
       { id: 9, selected: false, displayName: "Señor Oliveira Da Figueira", picture: dafigueiraPicture },
-      { id: 10, selected: false, displayName: "Général Alcazar", picture: alcazarPicture },
-      { id: 11, selected: false, displayName: "Abdallah", picture: abdallahPicture }
+      { id: 10, selected: false, displayName: "Tchang", picture: tchangPicture },
+      { id: 11, selected: false, displayName: "Général Alcazar", picture: alcazarPicture },
+      { id: 12, selected: false, displayName: "Abdallah", picture: abdallahPicture }
     ],
     showOverlay: false,
     previousShowOverlay: false,
     show: false,
     toggle: false,
     blocks: {
-      items: [{ id: 1, name: "menu" }, { id: 2, name: "profile" }, { id: 3, name: "illustrations" }],
+      items: ["menu", "profile", "illustrations"],
       current: "menu"
     }
   };
   nodes = [];
 
   onSelect = index => {
-    if (this.state.albums[index].selected) return;
+    if (this.state.characters[index].selected) return;
     this.setState(prevState => ({
-      albums: prevState.albums.map((album, i) => ({ ...album, selected: i === index })),
+      characters: prevState.characters.map((character, i) => ({ ...character, selected: i === index })),
       showOverlay: true,
       previousShowOverlay: false,
       show: true,
@@ -219,7 +221,7 @@ class App extends Component {
 
   onOverlayClick = () =>
     this.setState(prevState => ({
-      albums: prevState.albums.map(album => ({ ...album, selected: false })),
+      characters: prevState.characters.map(character => ({ ...character, selected: false })),
       showOverlay: false,
       show: false
     }));
@@ -233,26 +235,27 @@ class App extends Component {
     }));
   };
   render() {
-    const { albums: albumsFromState, showOverlay, show, previousShowOverlay, blocks } = this.state;
-    const selected = albumsFromState.find(a => a.selected);
-    const albums = albumsFromState.map((album, index) => (
-      <StyledAlbumContainer key={album.id} selected={album.selected} name={album.displayName}>
-        <StyledAlbum
+    const { characters: charactersFromState, showOverlay, show, previousShowOverlay, blocks } = this.state;
+    const isFirstAppearance = !previousShowOverlay;
+    const selected = charactersFromState.find(character => character.selected);
+    const characters = charactersFromState.map((character, index) => (
+      <StyledCharacterContainer key={character.id} selected={character.selected} name={character.displayName}>
+        <StyledCharacter
           ref={node => this.nodes.push(node)}
-          selected={album.selected}
+          selected={character.selected}
           onClick={() => {
             this.onSelect(index);
           }}
-          picture={album.picture}
+          picture={character.picture}
         />
-      </StyledAlbumContainer>
+      </StyledCharacterContainer>
     ));
     return (
       <>
         <GlobalStyle />
         <StyledContainer>
           <Overlay show={showOverlay} onClick={this.onOverlayClick} />
-          {albums}
+          {characters}
         </StyledContainer>
         <Spring
           from={{
@@ -268,20 +271,18 @@ class App extends Component {
             top: blocks.current === "menu" ? 50 : 55
           }}
           config={key => {
-            const isFirstAppearance = !previousShowOverlay;
             const duration =
               (key === "width" || key === "height" || key === "top") &&
               isFirstAppearance /* really important! to know if its the first appearance of modal */
                 ? 1
                 : show
                   ? 225
-                  : 150;
+                  : 1;
             return { duration };
           }}
           native
         >
           {({ opacity, top, width, height }) => {
-            console.log("render from Spring block");
             return (
               <StyledBlock
                 pointerEvents={show ? "auto" : "none"}
@@ -291,11 +292,16 @@ class App extends Component {
                 height={height}
               >
                 <Transition
-                  config={(_, type) => ({ duration: type === "leave" ? 1 : 200 })}
-                  items={[blocks.items.find(item => item.name === blocks.current)]}
-                  keys={item => item.id}
+                  config={(_, type) => {
+                    const duration = type === "leave" || !show ? 1 : 200;
+                    return {
+                      duration
+                    };
+                  }}
+                  items={[blocks.items.find(item => item === blocks.current)]}
+                  keys={item => item}
                   from={{ opacity: 0 }}
-                  enter={[{ opacity: !previousShowOverlay ? 1 : 0 }, { opacity: 1 }]}
+                  enter={[{ opacity: isFirstAppearance ? 1 : 0 }, { opacity: 1 }]}
                   leave={{ opacity: 0 }}
                 >
                   {() => {
