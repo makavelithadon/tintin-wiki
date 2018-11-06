@@ -1,5 +1,5 @@
-import React, { Component, createRef } from "react";
-import { Spring, Transition, animated } from "react-spring";
+import React, { PureComponent, createRef } from "react";
+import { Spring, Transition, animated, config } from "react-spring";
 import styled from "styled-components";
 import Menu from "./Menu";
 import Details from "./Details";
@@ -48,7 +48,7 @@ const getDetailsBlockSizes = () => {
   };
 };
 
-export default class Blocks extends Component {
+export default class Blocks extends PureComponent {
   node = createRef();
 
   setCoords = () => {
@@ -62,7 +62,7 @@ export default class Blocks extends Component {
       };
     } else {
       let { left, top, right, height } = this.props.selectedRef.getBoundingClientRect();
-      const offsetTop = 30;
+      const offsetTop = 50;
       const menuWidth = 190;
       const menuHeight = 131;
       const requiredHeight = menuHeight + offsetTop;
@@ -98,8 +98,11 @@ export default class Blocks extends Component {
           top: blocks.current === "menu" ? coords.top : getDetailsBlockSizes().top
         }}
         config={key => {
-          const duration = /width|height|top|left/.test(key) && isFirstAppearance ? 1 : show ? 325 : 1;
-          return { duration };
+          const c = { ...config.default };
+          if ((/width|height|top|left/.test(key) && isFirstAppearance) || !show) {
+            c.duration = 1;
+          }
+          return c;
         }}
         native
       >
@@ -117,7 +120,7 @@ export default class Blocks extends Component {
             >
               <Transition
                 config={(_, type) => {
-                  const duration = type === "leave" || !show ? 1 : 200;
+                  const duration = type === "leave" || !show ? 1 : 225;
                   return {
                     duration
                   };
