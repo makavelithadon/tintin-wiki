@@ -210,8 +210,16 @@ class App extends Component {
       showOverlay: false,
       show: false
     }));
-  handleToggle = () =>
-    this.setState(prevState => ({ toggle: !prevState.toggle, previousShowOverlay: !!prevState.showOverlay }));
+
+  showDetails = name => () => {
+    this.setState(prevState => ({
+      blocks: {
+        ...prevState.blocks,
+        current: name
+      },
+      previousShowOverlay: !!prevState.showOverlay
+    }));
+  };
   render() {
     const { albums: albumsFromState, showOverlay, toggle, show, previousShowOverlay } = this.state;
     const albums = albumsFromState.map((album, index) => (
