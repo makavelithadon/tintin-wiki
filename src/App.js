@@ -6,6 +6,7 @@ import characters from "./data";
 import Overlay from "./components/Overlay";
 import CharactersList from "./components/Characters/List";
 import Blocks from "./components/Blocks/index";
+import FloatingAvatar from "./components/FloatingAvatar";
 
 const GlobalStyle = createGlobalStyle`
   html, *, *::before, *::after {
@@ -47,6 +48,30 @@ class App extends Component {
     //console.log("this.charactersNodes", this.charactersNodes);
   }
 
+  getDetailsBlockSizes = () => {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const sizes = { width: 0, height: 0, top: 0, left: 0 };
+    if (window.matchMedia("(min-width: 1280px)").matches) {
+      sizes.width = viewportWidth * (48 / 100);
+      sizes.height = viewportHeight * (60 / 100);
+    } else if (window.matchMedia("(min-width: 600px)").matches) {
+      sizes.width = viewportWidth * (70 / 100);
+      sizes.height = viewportHeight * (60 / 100);
+    } else if (window.matchMedia("(min-width: 480px)").matches) {
+      sizes.width = viewportWidth * (85 / 100);
+      sizes.height = viewportHeight * (70 / 100);
+    } else {
+      sizes.width = viewportWidth * (92 / 100);
+      sizes.height = viewportHeight * (82 / 100);
+    }
+    return {
+      ...sizes,
+      left: (viewportWidth - sizes.width) / 2,
+      top: (viewportHeight - sizes.height) / 2 + viewportHeight * (5 / 100)
+    };
+  };
+
   handleSelect = index => {
     if (this.state.characters[index].selected) return;
     this.setState(prevState => ({
@@ -61,12 +86,13 @@ class App extends Component {
     }));
   };
 
-  onOverlayClick = () =>
+  onOverlayClick = () => {
     this.setState(prevState => ({
       characters: prevState.characters.map(character => ({ ...character, selected: false })),
       showOverlay: false,
       show: false
     }));
+  };
 
   showDetails = name => () => {
     this.setState(prevState => ({
@@ -80,9 +106,10 @@ class App extends Component {
 
   render() {
     const { characters, showOverlay, show, previousShowOverlay, blocks } = this.state;
+    console.log("blocks.current", blocks.current);
     const selectedCharacterIndex = characters.findIndex(c => c.selected);
-    const selectedRef =
-      typeof selectedCharacterIndex !== "undefined" ? this.charactersNodes[selectedCharacterIndex] : null;
+    const oneCharacterIsSelected = selectedCharacterIndex >= 0;
+    const selectedRef = oneCharacterIsSelected ? this.charactersNodes[selectedCharacterIndex] : null;
     return (
       <>
         <GlobalStyle />
@@ -94,8 +121,16 @@ class App extends Component {
             onSelect={this.handleSelect}
           />
         </StyledContainer>
+        <FloatingAvatar
+          state={blocks.current}
+          getDetailsBlockSizes={this.getDetailsBlockSizes}
+          show={oneCharacterIsSelected}
+          originPictureRef={this.charactersNodes[selectedCharacterIndex]}
+          character={oneCharacterIsSelected ? characters[selectedCharacterIndex] : null}
+        />
         <Blocks
           show={show}
+          getDetailsBlockSizes={this.getDetailsBlockSizes}
           blocks={blocks}
           previousShowOverlay={previousShowOverlay}
           selectedCharacter={characters.find(character => character.selected)}

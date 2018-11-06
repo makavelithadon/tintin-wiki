@@ -12,16 +12,16 @@ import alcazarPicture from "./assets/img/alcazar.jpg";
 import abdallahPicture from "./assets/img/abdallah.png";
 
 export default [
-  { id: 1, selected: false, displayName: "Tintin", picture: tintinPicture },
-  { id: 2, selected: false, displayName: "Milou", picture: milouPicture },
-  { id: 3, selected: false, displayName: "Capitaine Haddock", picture: haddockPicture },
-  { id: 4, selected: false, displayName: "Professeur Tournesol", picture: tournesolPicture },
-  { id: 5, selected: false, displayName: "Dupont et Dupond", picture: dupondtPicture },
-  { id: 6, selected: false, displayName: "Nestor", picture: nestorPicture },
-  { id: 7, selected: false, displayName: "Bianca Castafiore", picture: castafiorePicture },
-  { id: 8, selected: false, displayName: "Séraphin Lampion", picture: lampionPicture },
-  { id: 9, selected: false, displayName: "Señor Oliveira Da Figueira", picture: dafigueiraPicture },
-  { id: 10, selected: false, displayName: "Tchang", picture: tchangPicture },
-  { id: 11, selected: false, displayName: "Général Alcazar", picture: alcazarPicture },
-  { id: 12, selected: false, displayName: "Abdallah", picture: abdallahPicture }
+  { id: 1, hovered: false, selected: false, displayName: "Tintin", picture: tintinPicture },
+  { id: 2, hovered: false, selected: false, displayName: "Milou", picture: milouPicture },
+  { id: 3, hovered: false, selected: false, displayName: "Capitaine Haddock", picture: haddockPicture },
+  { id: 4, hovered: false, selected: false, displayName: "Professeur Tournesol", picture: tournesolPicture },
+  { id: 5, hovered: false, selected: false, displayName: "Dupont et Dupond", picture: dupondtPicture },
+  { id: 6, hovered: false, selected: false, displayName: "Nestor", picture: nestorPicture },
+  { id: 7, hovered: false, selected: false, displayName: "Bianca Castafiore", picture: castafiorePicture },
+  { id: 8, hovered: false, selected: false, displayName: "Séraphin Lampion", picture: lampionPicture },
+  { id: 9, hovered: false, selected: false, displayName: "Señor Oliveira Da Figueira", picture: dafigueiraPicture },
+  { id: 10, hovered: false, selected: false, displayName: "Tchang", picture: tchangPicture },
+  { id: 11, hovered: false, selected: false, displayName: "Général Alcazar", picture: alcazarPicture },
+  { id: 12, hovered: false, selected: false, displayName: "Abdallah", picture: abdallahPicture }
 ];

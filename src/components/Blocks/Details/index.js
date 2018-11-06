@@ -4,7 +4,7 @@ import { StyledCommon } from "./../styles";
 
 const StyledDetails = styled(StyledCommon)`
   height: 100%;
-  padding: 16px 24px;
+  padding: 70px 24px 16px 24px;
   overflow: auto;
 `;
 

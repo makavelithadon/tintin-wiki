@@ -10,14 +10,14 @@ const StyledCharacterContainer = styled.div`
   height: 120px;
   margin-bottom: 42px;
   position: relative;
-  z-index: ${({ selected }) => (selected ? 3 : 1)};
+  //z-index: ${({ selected }) => (selected ? 3 : 1)};
   &:after {
     content: "${({ name }) => name}";
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     bottom: -22px;
-    width: 92%;
+    width: 84%;
     height: 24px;
     text-align: center;
     font-size: .9rem;

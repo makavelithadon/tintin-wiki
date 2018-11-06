@@ -18,35 +18,12 @@ const StyledBlock = styled(animated.div).attrs({
   }
 })`
   position: fixed;
-  z-index: 10000;
+  z-index: 10;
   background-color: #fff;
-  border-radius: 6px;
+  border-radius: 10px;
+  box-shadow: 0 2px 48px rgba(0, 0, 0, 0.125);
   overflow: hidden;
 `;
-
-const getDetailsBlockSizes = () => {
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-  const sizes = { width: 0, height: 0, top: 0, left: 0 };
-  if (window.matchMedia("(min-width: 1280px)").matches) {
-    sizes.width = viewportWidth * (48 / 100);
-    sizes.height = viewportHeight * (60 / 100);
-  } else if (window.matchMedia("(min-width: 600px)").matches) {
-    sizes.width = viewportWidth * (70 / 100);
-    sizes.height = viewportHeight * (60 / 100);
-  } else if (window.matchMedia("(min-width: 480px)").matches) {
-    sizes.width = viewportWidth * (85 / 100);
-    sizes.height = viewportHeight * (70 / 100);
-  } else {
-    sizes.width = viewportWidth * (92 / 100);
-    sizes.height = viewportHeight * (82 / 100);
-  }
-  return {
-    ...sizes,
-    left: (viewportWidth - sizes.width) / 2,
-    top: (viewportHeight - sizes.height) / 2 + viewportHeight * (5 / 100)
-  };
-};
 
 export default class Blocks extends PureComponent {
   node = createRef();
@@ -62,7 +39,7 @@ export default class Blocks extends PureComponent {
       };
     } else {
       let { left, top, right, height } = this.props.selectedRef.getBoundingClientRect();
-      const offsetTop = 50;
+      const offsetTop = 16;
       const menuWidth = 190;
       const menuHeight = 131;
       const requiredHeight = menuHeight + offsetTop;
@@ -79,7 +56,14 @@ export default class Blocks extends PureComponent {
   };
 
   render() {
-    const { show, blocks, previousShowOverlay, selectedCharacter: selected, handleClickMenuItem } = this.props;
+    const {
+      show,
+      blocks,
+      previousShowOverlay,
+      selectedCharacter: selected,
+      handleClickMenuItem,
+      getDetailsBlockSizes
+    } = this.props;
     const isFirstAppearance = !previousShowOverlay;
     const coords = this.setCoords();
     return (
@@ -100,9 +84,8 @@ export default class Blocks extends PureComponent {
         config={key => {
           const customConfig = { ...config.default };
           if ((/width|top|left/.test(key) && isFirstAppearance) || !show) {
-            customConfig.duration = 1;
+            customConfig.duration = 0.00001;
           }
-          console.log("customConfig", customConfig);
           return customConfig;
         }}
         native
@@ -121,7 +104,7 @@ export default class Blocks extends PureComponent {
             >
               <Transition
                 config={(_, type) => {
-                  const duration = type === "leave" || !show ? 1 : 225;
+                  const duration = type === "leave" || !show ? 0.00001 : 225;
                   return {
                     duration
                   };
