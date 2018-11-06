@@ -2,26 +2,6 @@ import React, { Component, createRef } from "react";
 import { Transition, Spring } from "react-spring";
 import styled from "styled-components";
 
-const StyledMenu = styled.ul.attrs({
-  style: ({ opacity, show }) => ({
-    opacity,
-    visibility: opacity > 0 ? "visible" : "hidden",
-    pointerEvents: show ? "auto" : "none"
-  })
-})`
-  position: relative;
-  height: 100%;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  padding: 0;
-  margin: 0;
-  width: 190px;
-  background-color: #fff;
-  list-style-type: none;
-`;
-
 const StyledMenuItem = styled.li`
   background-color: ${({ backgroundColor }) => backgroundColor || "#fff"};
   color: rgba(0, 0, 0, 0.7);
@@ -157,13 +137,10 @@ export default class Block extends Component {
     const decalageTop = height + offsetTop;
     left = (hasAvailableWidth ? left : left - overflowedWidth - (viewportWidth - right)) + "px";
     top = top + (hasAvailableHeight ? decalageTop : -requiredHeight) + "px";
-    console.log("this.node.current.firstElementChild", this.node.current.firstElementChild);
     this.setState({
       coords: {
         left,
-        top,
-        width: this.node.current.firstElementChild.clientWidth,
-        height: this.node.current.firstElementChild.clientHeight
+        top
       }
     });
   };
