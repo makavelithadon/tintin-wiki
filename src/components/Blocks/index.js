@@ -126,7 +126,7 @@ export default class Blocks extends PureComponent {
                         <Details {...props} show={blocks.current === "profile"}>
                           <div style={{ overflow: "auto" }}>
                             {selected && (
-                              <h2 style={{ marginTop: 0, fontSize: "1rem", fontWeight: 400 }}>
+                              <h2 style={{ marginTop: 0, fontSize: "1rem", fontWeight: 400, textAlign: "center" }}>
                                 {selected.displayName}
                               </h2>
                             )}
@@ -136,7 +136,9 @@ export default class Blocks extends PureComponent {
                     case "illustrations":
                       return props => (
                         <Details {...props} show={blocks.current === "illusrations"}>
-                          <h2 style={{ marginTop: 0, fontSize: "1rem", fontWeight: 400 }}>Illustrations</h2>
+                          <h2 style={{ marginTop: 0, fontSize: "1rem", fontWeight: 400, textAlign: "center" }}>
+                            Illustrations
+                          </h2>
                           <div style={{ overflow: "auto" }}>42 images :</div>
                         </Details>
                       );

@@ -45,7 +45,6 @@ export default class FloatingAvatar extends PureComponent {
       };
     } else {
       if (state === "menu") {
-        console.log("menu");
         const pictureCoords = this.props.originPictureRef.getBoundingClientRect();
         left = pictureCoords.left;
         top = pictureCoords.top;
@@ -54,14 +53,11 @@ export default class FloatingAvatar extends PureComponent {
           top: top
         };
       } else {
-        console.log("other");
         const { top: detailsTop } = getDetailsBlockSizes();
-        console.log("detailsTop", detailsTop);
         const width = 84;
         const height = width;
         left = window.innerWidth / 2 - width / 2;
         top = detailsTop - height / 2;
-        console.log("detailsTop", detailsTop, "height", height, "height/2", height / 2);
         return {
           left: left,
           top: top
