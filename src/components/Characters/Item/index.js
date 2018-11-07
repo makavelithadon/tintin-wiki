@@ -21,6 +21,8 @@ const StyledCharacterContainer = styled.div`
     height: 24px;
     text-align: center;
     font-size: .9rem;
+    font-weight: 400;
+    color: rgba(0,0,0,0.825);
   }
 `;
 

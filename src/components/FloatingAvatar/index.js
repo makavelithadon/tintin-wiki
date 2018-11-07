@@ -1,19 +1,22 @@
 import React, { PureComponent } from "react";
 import styled from "styled-components";
-import { Spring, animated, config } from "react-spring";
+import { Spring, animated } from "react-spring";
+import deepEqual from "deep-equal";
+
+const getAnimatedStyles = ({ o, left, top, zoom, boxShadow }) => ({
+  opacity: o.interpolate(o => o),
+  zIndex: o.interpolate(o => (o > 0 ? 12 : 1)),
+  transform: zoom.interpolate(zoom => `scale(${zoom})`),
+  boxShadow: boxShadow.interpolate(boxShadow => boxShadow),
+  cursor: o.interpolate(o => (o > 0 ? "initial" : "pointer")),
+  visibility: o.interpolate(o => (o > 0 ? "visible" : "hidden")),
+  pointerEvents: o.interpolate(o => (o > 0 ? "auto" : "none")),
+  left,
+  top
+});
 
 const StyledFloatingAvatar = styled(animated.div).attrs({
-  style: ({ o, left, top, zoom, boxShadow }) => {
-    return {
-      opacity: o.interpolate(o => o),
-      zIndex: o.interpolate(o => (o > 0 ? 12 : 1)),
-      transform: zoom.interpolate(zoom => `scale(${zoom})`),
-      boxShadow: boxShadow.interpolate(boxShadow => boxShadow),
-      cursor: o.interpolate(o => (o > 0 ? "initial" : "pointer")),
-      left,
-      top
-    };
-  }
+  style: getAnimatedStyles
 })`
   background: ${({ picture }) => (picture ? `url(${picture}) no-repeat center top, #fff` : "#fff")};
   background-size: cover;
@@ -32,13 +35,27 @@ const StyledFloatingAvatar = styled(animated.div).attrs({
 `;
 
 export default class FloatingAvatar extends PureComponent {
+  state = {
+    character: null,
+    previousCharacter: null
+  };
+  static getDerivedStateFromProps({ character }, prevState) {
+    let newCharacter;
+    if (prevState.character && character && character.id === prevState.character.id) {
+      newCharacter = prevState.character;
+    } else {
+      newCharacter = character;
+    }
+    return { character: newCharacter, previousCharacter: prevState.character };
+  }
+
   zoomCoeficient = 1.2;
   setCoords = () => {
     const { originPictureRef, state, getDetailsBlockSizes } = this.props;
     let left, top;
     if (!originPictureRef) {
-      left = 0;
-      top = 0;
+      left = -99999;
+      top = -99999;
       return {
         left,
         top
@@ -66,16 +83,26 @@ export default class FloatingAvatar extends PureComponent {
     }
   };
   render() {
-    const { character, show, state } = this.props;
+    const { show, state, defaultSpringConfig } = this.props;
+    const { character, previousCharacter } = this.state;
     const { left, top } = this.setCoords();
+    const characterWasUpdated = !!character && !!previousCharacter && character.id !== previousCharacter.id;
+    console.log(
+      "character",
+      character,
+      "previousCharacter",
+      previousCharacter,
+      "characterWasUpdated",
+      characterWasUpdated
+    );
     return (
       <Spring
         from={{
           o: 0,
           zoom: 1,
           boxShadow: "0 2px 48px rgba(0,0,0,0.0)",
-          left: 0,
-          top: 0
+          left,
+          top
         }}
         to={{
           o: Number(show),
@@ -86,15 +113,16 @@ export default class FloatingAvatar extends PureComponent {
         }}
         config={key => {
           let customConfig = {
-            ...config.default
+            ...defaultSpringConfig
           };
           customConfig.duration = /o|zoom|top|left/.test(key) && state === "menu" ? 0.000001 : show ? 0 : 0.00001;
+          console.log("customConfig", customConfig);
           return customConfig;
         }}
         native
+        reset={characterWasUpdated}
       >
         {({ o, zoom, left, top, boxShadow }) => {
-          console.log("here");
           return (
             <StyledFloatingAvatar
               o={o}

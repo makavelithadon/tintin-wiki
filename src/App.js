@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
-import styled, { createGlobalStyle } from "styled-components";
+import styled from "styled-components";
 import characters from "./data";
 
 import Overlay from "./components/Overlay";
@@ -8,15 +8,7 @@ import CharactersList from "./components/Characters/List";
 import Blocks from "./components/Blocks/index";
 import FloatingAvatar from "./components/FloatingAvatar";
 
-const GlobalStyle = createGlobalStyle`
-  html, *, *::before, *::after {
-    box-sizing: border-box;
-  }
-  body {
-    background-color: moccasin;
-    font-family: 'Roboto Condensed', sans-serif;
-  }
-`;
+const defaultSpringConfig = { tension: 260, friction: 23 };
 
 const StyledContainer = styled.div`
   position: relative;
@@ -43,10 +35,6 @@ class App extends Component {
     }
   };
   charactersNodes = [];
-
-  componentDidMount() {
-    //console.log("this.charactersNodes", this.charactersNodes);
-  }
 
   getDetailsBlockSizes = () => {
     const viewportWidth = window.innerWidth;
@@ -80,8 +68,7 @@ class App extends Component {
       previousShowOverlay: false,
       show: true,
       blocks: {
-        ...prevState.blocks,
-        current: "menu"
+        ...prevState.blocks
       }
     }));
   };
@@ -90,7 +77,11 @@ class App extends Component {
     this.setState(prevState => ({
       characters: prevState.characters.map(character => ({ ...character, selected: false })),
       showOverlay: false,
-      show: false
+      show: false,
+      blocks: {
+        ...prevState.blocks,
+        current: "menu"
+      }
     }));
   };
 
@@ -106,13 +97,11 @@ class App extends Component {
 
   render() {
     const { characters, showOverlay, show, previousShowOverlay, blocks } = this.state;
-    console.log("blocks.current", blocks.current);
     const selectedCharacterIndex = characters.findIndex(c => c.selected);
     const oneCharacterIsSelected = selectedCharacterIndex >= 0;
     const selectedRef = oneCharacterIsSelected ? this.charactersNodes[selectedCharacterIndex] : null;
     return (
       <>
-        <GlobalStyle />
         <StyledContainer>
           <Overlay show={showOverlay} onClick={this.onOverlayClick} />
           <CharactersList
@@ -122,6 +111,7 @@ class App extends Component {
           />
         </StyledContainer>
         <FloatingAvatar
+          defaultSpringConfig={defaultSpringConfig}
           state={blocks.current}
           getDetailsBlockSizes={this.getDetailsBlockSizes}
           show={oneCharacterIsSelected}
@@ -130,8 +120,11 @@ class App extends Component {
         />
         <Blocks
           show={show}
+          defaultSpringConfig={defaultSpringConfig}
           getDetailsBlockSizes={this.getDetailsBlockSizes}
           blocks={blocks}
+          characters={characters}
+          goTo={this.handleSelect}
           previousShowOverlay={previousShowOverlay}
           selectedCharacter={characters.find(character => character.selected)}
           handleClickMenuItem={this.showDetails}
